@@ -111,17 +111,17 @@ def test_CommandLineApp_uncaught_exception(logger_exception):
 
 
 @patch('csboilerplate.logging.basicConfig')
-def test_CommandLineApp_init_logger(logging_config):
+def test_CommandLineApp_logging_config(basicConfig):
     App = csboilerplate.CommandLineApp(noop)
-    App.init_logger(log_level=0)
-    assert logging_config.call_args[1]['level'] == logging.WARNING
-    App.init_logger(log_level=1)
-    assert logging_config.call_args[1]['level'] == logging.INFO
-    App.init_logger(log_level=2)
-    assert logging_config.call_args[1]['level'] == logging.DEBUG
+    App.logging_config(log_level=0)
+    assert basicConfig.call_args[1]['level'] == logging.WARNING
+    App.logging_config(log_level=1)
+    assert basicConfig.call_args[1]['level'] == logging.INFO
+    App.logging_config(log_level=2)
+    assert basicConfig.call_args[1]['level'] == logging.DEBUG
     with pytest.raises(IndexError):
-        App.init_logger(log_level=3)
-    App.init_logger(handlers=[42])
-    assert logging_config.call_args[1]['handlers'] == [42]
-    App.init_logger(log_level=3, log_levels=[0, 1, 2, 3])
-    assert logging_config.call_args[1]['level'] == 3
+        App.logging_config(log_level=3)
+    App.logging_config(handlers=[42])
+    assert basicConfig.call_args[1]['handlers'] == [42]
+    App.logging_config(log_level=3, log_levels=[0, 1, 2, 3])
+    assert basicConfig.call_args[1]['level'] == 3

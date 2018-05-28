@@ -26,7 +26,7 @@ from csboilerplate import cli_app
 
 @cli_app(name=__name__)
 def main(app):
-    app.init_logger(app.args.debug)
+    app.logging_config(log_level=app.args.debug)
     # do your stuff
 
 

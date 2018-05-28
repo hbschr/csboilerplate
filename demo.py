@@ -25,7 +25,7 @@ def exit(error_message=None):
 
 @cli_app(name='demo', exit_handler=exit)
 def main(app):
-    app.init_logger(app.args.debug)
+    app.logging_config(log_level=app.args.debug)
     logger.info(f'start `{app.name}` w/ pid `{os.getpid()}`')
     if app.args.error:
         raise ValueError('something bad happened')

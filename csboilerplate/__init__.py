@@ -48,7 +48,7 @@ class CommandLineApp(object):
             self.exit('uncaught exception')
         self.exit()
 
-    def init_logger(self, log_level=0, log_levels=(logging.WARNING, logging.INFO, logging.DEBUG), **kwargs):
+    def logging_config(self, log_level=0, log_levels=(logging.WARNING, logging.INFO, logging.DEBUG), **kwargs):
         """increase log level.
 
         :param log_level int: index of `log_levels` to be chosen, defaults to `0` - warning, `1` - info, `2` - debug
