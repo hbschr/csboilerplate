@@ -15,6 +15,11 @@ def noop(app):
     pass
 
 
+@pytest.fixture(autouse=True)
+def reset_sigterm_handler():
+    signal.signal(signal.SIGTERM, signal.SIG_DFL)
+
+
 def test_export():
     assert 'cli_app' in dir(csboilerplate)
     assert 'CommandLineApp' in dir(csboilerplate)
@@ -80,6 +85,17 @@ def test_CommandLineApp_interrupt():
     with pytest.raises(SystemExit):
         App()
     exit.assert_called_once_with('KeyboardInterrupt')
+
+
+def test_CommandLineApp_sigterm_handler():
+    csboilerplate.CommandLineApp(noop, sigterm_handler=False)
+    assert signal.getsignal(signal.SIGTERM) == signal.SIG_DFL
+    csboilerplate.CommandLineApp(noop)
+    assert callable(signal.getsignal(signal.SIGTERM))
+    with pytest.raises(SystemExit):
+        signal.getsignal(signal.SIGTERM)('signal', 'frame')
+    csboilerplate.CommandLineApp(noop, sigterm_handler=noop)
+    assert signal.getsignal(signal.SIGTERM) == noop
 
 
 @patch('csboilerplate.logger.exception')
