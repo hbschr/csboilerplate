@@ -2,6 +2,7 @@ import argparse
 import logging
 import signal
 import sys
+import types
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +30,13 @@ class CommandLineApp(object):
     name = None
     exit = None
 
-    def __init__(self, main, name=sys.argv[0], exit_handler=sys.exit, sigterm_handler=None):
+    def __init__(self, main, name=sys.argv[0], exit_handler=None, sigterm_handler=None):
         self._main = main
         self.name = name
-        self.exit = exit_handler
+        if exit_handler is None:
+            self.exit = sys.exit
+        else:
+            self.exit = types.MethodType(exit_handler, self)
         self.argparser = argparse.ArgumentParser()
         if sigterm_handler is not False:
             signal.signal(signal.SIGTERM, sigterm_handler or (lambda signal, frame: self.exit('Terminated')))

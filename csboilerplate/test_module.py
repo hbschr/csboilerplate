@@ -28,8 +28,8 @@ def test_export():
 def test_cli_app():
     decorator = csboilerplate.cli_app()
     assert callable(decorator)
-    App = decorator(noop)
-    assert isinstance(App, csboilerplate.CommandLineApp)
+    app = decorator(noop)
+    assert isinstance(app, csboilerplate.CommandLineApp)
 
 
 @patch('csboilerplate.CommandLineApp')
@@ -42,49 +42,54 @@ def test_cli_app_kwargs(patched):
 
 def test_CommandLineApp():
     dummy_main = Mock()
-    App = csboilerplate.CommandLineApp(dummy_main)
-    assert callable(App)
+    app = csboilerplate.CommandLineApp(dummy_main)
+    assert callable(app)
     dummy_main.assert_not_called()
     with pytest.raises(SystemExit):
-        App()
-    dummy_main.assert_called_once_with(App)
+        app()
+    dummy_main.assert_called_once_with(app)
 
 
 def test_CommandLineApp_argparser():
-    App = csboilerplate.CommandLineApp(noop)
-    assert isinstance(App.argparser, argparse.ArgumentParser)
-    assert App.args is None
+    app = csboilerplate.CommandLineApp(noop)
+    assert isinstance(app.argparser, argparse.ArgumentParser)
+    assert app.args is None
     with pytest.raises(SystemExit):
-        App()
-    assert isinstance(App.args, argparse.Namespace)
+        app()
+    assert isinstance(app.args, argparse.Namespace)
 
 
 def test_CommandLineApp_attribute_defaults():
-    App = csboilerplate.CommandLineApp(noop)
-    assert App.name == sys.argv[0]
-    assert App.exit is sys.exit
+    app = csboilerplate.CommandLineApp(noop)
+    assert app.name == sys.argv[0]
+    assert app.exit is sys.exit
 
 
 def test_CommandLineApp_name():
-    App = csboilerplate.CommandLineApp(noop, name='test_name')
-    assert App.name == 'test_name'
+    app = csboilerplate.CommandLineApp(noop, name='test_name')
+    assert app.name == 'test_name'
 
 
 def test_CommandLineApp_exit_handler():
     exit = Mock()
-    App = csboilerplate.CommandLineApp(noop, exit_handler=exit)
-    assert App.exit is exit
-    App()
-    exit.assert_called_once()
+    app = csboilerplate.CommandLineApp(noop, exit_handler=exit)
+    exit.assert_not_called()
+    app()
+    exit.assert_called_once_with(app)
+    app.exit()
+    exit.assert_called_with(app)
+    assert exit.call_count == 2
+    app.exit(error_message='error')
+    exit.assert_called_with(app, error_message='error')
 
 
 def test_CommandLineApp_interrupt():
     interrupted = Mock(side_effect=KeyboardInterrupt)
     exit = Mock(side_effect=SystemExit)
-    App = csboilerplate.CommandLineApp(interrupted, exit_handler=exit)
+    app = csboilerplate.CommandLineApp(interrupted, exit_handler=exit)
     with pytest.raises(SystemExit):
-        App()
-    exit.assert_called_once_with('KeyboardInterrupt')
+        app()
+    exit.assert_called_once_with(app, 'KeyboardInterrupt')
 
 
 def test_CommandLineApp_sigterm_handler():
@@ -101,27 +106,26 @@ def test_CommandLineApp_sigterm_handler():
 @patch('csboilerplate.logger.exception')
 def test_CommandLineApp_uncaught_exception(logger_exception):
     broken = Mock(side_effect=ValueError)
-    exit = Mock(side_effect=SystemExit)
-    App = csboilerplate.CommandLineApp(broken, exit_handler=exit)
-    with pytest.raises(SystemExit):
-        App()
-    exit.assert_called_once_with('uncaught exception')
+    app = csboilerplate.CommandLineApp(broken)
+    with pytest.raises(SystemExit) as excinfo:
+        app()
+    assert excinfo.value.code == 'uncaught exception'
     logger_exception.assert_called_once()
     assert isinstance(logger_exception.call_args[0][0], ValueError)
 
 
 @patch('csboilerplate.logging.basicConfig')
 def test_CommandLineApp_logging_config(basicConfig):
-    App = csboilerplate.CommandLineApp(noop)
-    App.logging_config(log_level=0)
+    app = csboilerplate.CommandLineApp(noop)
+    app.logging_config(log_level=0)
     assert basicConfig.call_args[1]['level'] == logging.WARNING
-    App.logging_config(log_level=1)
+    app.logging_config(log_level=1)
     assert basicConfig.call_args[1]['level'] == logging.INFO
-    App.logging_config(log_level=2)
+    app.logging_config(log_level=2)
     assert basicConfig.call_args[1]['level'] == logging.DEBUG
     with pytest.raises(IndexError):
-        App.logging_config(log_level=3)
-    App.logging_config(handlers=[42])
+        app.logging_config(log_level=3)
+    app.logging_config(handlers=[42])
     assert basicConfig.call_args[1]['handlers'] == [42]
-    App.logging_config(log_level=3, log_levels=[0, 1, 2, 3])
+    app.logging_config(log_level=3, log_levels=[0, 1, 2, 3])
     assert basicConfig.call_args[1]['level'] == 3
