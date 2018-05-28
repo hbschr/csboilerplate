@@ -21,9 +21,7 @@ setup(
     setup_requires=['setuptools_scm'],
     packages=('csboilerplate',),
     url='https://github.com/hbschr/csboilerplate',
-    install_requires=[
-        'setuptools-scm>=2.1.0',
-    ],
+    install_requires=[],
     extras_require={
         'dev': [
             'flake8>=3.5.0',
