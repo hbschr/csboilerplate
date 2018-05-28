@@ -1,6 +1,7 @@
 import argparse
 import logging
 import pytest
+import signal
 import sys
 from unittest.mock import patch, Mock
 
@@ -96,9 +97,15 @@ def test_CommandLineApp_uncaught_exception(logger_exception):
 @patch('csboilerplate.logging.basicConfig')
 def test_CommandLineApp_init_logger(logging_config):
     App = csboilerplate.CommandLineApp(noop)
-    App.init_logger(0)
-    logging_config.assert_called_with(level=logging.WARNING)
-    App.init_logger(1)
-    logging_config.assert_called_with(level=logging.INFO)
-    App.init_logger(2)
-    logging_config.assert_called_with(level=logging.DEBUG)
+    App.init_logger(log_level=0)
+    assert logging_config.call_args[1]['level'] == logging.WARNING
+    App.init_logger(log_level=1)
+    assert logging_config.call_args[1]['level'] == logging.INFO
+    App.init_logger(log_level=2)
+    assert logging_config.call_args[1]['level'] == logging.DEBUG
+    with pytest.raises(IndexError):
+        App.init_logger(log_level=3)
+    App.init_logger(handlers=[42])
+    assert logging_config.call_args[1]['handlers'] == [42]
+    App.init_logger(log_level=3, log_levels=[0, 1, 2, 3])
+    assert logging_config.call_args[1]['level'] == 3
