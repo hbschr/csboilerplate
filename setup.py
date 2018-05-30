@@ -27,7 +27,7 @@ setup(
             'flake8>=3.5.0',
             'pytest>=3.6.0',
             'pytest-cov>=2.5.1',
-            'python-coveralls>=2.9.1',
+            'coveralls>=1.3.0',
             'tox>=3.0.0',
         ],
     },
