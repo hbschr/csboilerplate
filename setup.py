@@ -30,6 +30,9 @@ setup(
             'coveralls>=1.3.0',
             'tox>=3.0.0',
         ],
+        'doc': [
+            'sphinx>=1.7.5',
+        ],
     },
     classifiers=[
         'Development Status :: 3 - Alpha',

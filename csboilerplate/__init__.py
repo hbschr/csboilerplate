@@ -8,6 +8,12 @@ logger = logging.getLogger(__name__)
 
 
 def cli_app(**kwargs):
+    """
+
+    :param kwargs:
+    :return:
+    :rtype: :class:`CommandLineApp`
+    """
     def decorator(func):
         return CommandLineApp(func, **kwargs)
     return decorator
