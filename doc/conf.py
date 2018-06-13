@@ -11,10 +11,10 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
 import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
+# import sys
+# sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -176,12 +176,21 @@ intersphinx_mapping = {
 autodoc_default_flags = ['private-members']
 
 
-# include `__init__` in doc
 def skip(app, what, name, obj, skip, options):
+    # include `__init__` in doc
     if name == "__init__":
         return False
     return skip
 
 
+def run_apidoc(_):
+    from sphinx.ext.apidoc import main
+    doc_root = os.path.abspath(os.path.dirname(__file__))
+    module_dir = os.path.join(doc_root, '..', project)
+    out_dir = os.path.join(doc_root, 'api')
+    main(['--force', module_dir, '-o', out_dir])
+
+
 def setup(app):
-    app.connect("autodoc-skip-member", skip)
+    app.connect('autodoc-skip-member', skip)
+    app.connect('builder-inited', run_apidoc)
