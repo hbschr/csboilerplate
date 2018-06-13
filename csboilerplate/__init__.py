@@ -10,6 +10,15 @@ logger = logging.getLogger(__name__)
 def cli_app(**kwargs):
     """
 
+    >>> from csboilerplate import cli_app, CommandLineApp
+    >>> decorator = cli_app(name='my_app_name')
+    >>> app = decorator(lambda x: x)
+    >>> isinstance(app, CommandLineApp)
+    True
+    >>> app.name
+    'my_app_name'
+
+
     :param kwargs:
     :return:
     :rtype: :class:`CommandLineApp`
