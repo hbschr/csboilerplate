@@ -103,10 +103,11 @@ def test_CommandLineApp_sigterm_handler():
     assert signal.getsignal(signal.SIGTERM) == noop
 
 
-@patch('csboilerplate.logger.exception')
-def test_CommandLineApp_uncaught_exception(logger_exception):
+def test_CommandLineApp_uncaught_exception():
     broken = Mock(side_effect=ValueError)
     app = csboilerplate.CommandLineApp(broken)
+    logger_exception = Mock()
+    app.logger.exception = logger_exception
     with pytest.raises(SystemExit) as excinfo:
         app()
     assert excinfo.value.code == 'uncaught exception'

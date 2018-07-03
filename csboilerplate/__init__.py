@@ -4,8 +4,6 @@ import signal
 import sys
 import types
 
-logger = logging.getLogger(__name__)
-
 
 def cli_app(**kwargs):
     """
@@ -44,10 +42,12 @@ class CommandLineApp(object):
     _main = None
     name = None
     exit = None
+    logger = None
 
     def __init__(self, main, name=sys.argv[0], exit_handler=None, sigterm_handler=None):
         self._main = main
         self.name = name
+        self.logger = logging.getLogger(self.name)
         if exit_handler is None:
             self.exit = sys.exit
         else:
@@ -63,7 +63,7 @@ class CommandLineApp(object):
         except KeyboardInterrupt:
             self.exit('KeyboardInterrupt')
         except Exception as e:
-            logger.exception(e)
+            self.logger.exception(e)
             self.exit('uncaught exception')
         self.exit()
 
