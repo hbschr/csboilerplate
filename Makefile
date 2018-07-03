@@ -1,8 +1,11 @@
 doc: doctest
 	sphinx-build -b html doc doc/build
 
-doctest:
+doctest: apidoc
 	sphinx-build -b doctest doc doc/doctest
+
+apidoc:
+#	sphinx-apidoc -f csboilerplate -o doc/api
 
 clean-doc:
 	rm -rf doc/api doc/build doc/doctest

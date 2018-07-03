@@ -192,5 +192,7 @@ def run_apidoc(_):
 
 
 def setup(app):
+    import doctest
+    doctest.testfile('../csboilerplate/__init__.py')
     app.connect('autodoc-skip-member', skip)
     app.connect('builder-inited', run_apidoc)
