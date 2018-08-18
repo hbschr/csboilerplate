@@ -9,7 +9,7 @@ from csboilerplate import cli_app
 logger = logging.getLogger(__name__)
 
 
-def exit(error_message=None):
+def exit(app, error_message=None):
     """log and exit.
 
     :param str error_message: will be logged. changes exit status to `1`.
